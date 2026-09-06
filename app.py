@@ -40,6 +40,18 @@ def main():
     init_db()
     st.title("Login and Signup App")
 
+    # Injecting Custom CSS for the dotted border box
+    st.markdown("""
+        <style>
+        .dotted-box {
+            border: 3px dotted #FF4B4B; /* Change color here */
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     # Session state for login status
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
@@ -57,17 +69,24 @@ def main():
 
         if choice == "Login":
             st.subheader("Login Section")
-            username = st.text_input("Username")
-            password = st.text_input("Password", type="password")
+            
+            # Using st.container with a custom CSS wrapper class
+            with st.container(border=False):
+                st.markdown('<div class="dotted-box">', unsafe_allow_html=True)
+                
+                username = st.text_input("Username")
+                password = st.text_input("Password", type="password")
 
-            if st.button("Login"):
-                if verify_user(username, password):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.success("Logged in successfully!")
-                    st.rerun()
-                else:
-                    st.error("Invalid username or password")
+                if st.button("Login"):
+                    if verify_user(username, password):
+                        st.session_state.logged_in = True
+                        st.session_state.username = username
+                        st.success("Logged in successfully!")
+                        st.rerun()
+                    else:
+                        st.error("Invalid username or password")
+                        
+                st.markdown('</div>', unsafe_allow_html=True)
 
         elif choice == "Sign Up":
             st.subheader("Create New Account")
