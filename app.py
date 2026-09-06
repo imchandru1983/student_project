@@ -38,7 +38,7 @@ def verify_user(username, password):
 # Main app
 def main():
     init_db()
-    st.title("Login and Signup App")
+    st.title("🔒Login and Signup App")
 
     # Injecting Custom CSS for container borders and text adjustments
     st.markdown("""
@@ -71,7 +71,7 @@ def main():
         st.session_state.username = ""
 
     if st.session_state.logged_in:
-        st.success(f"Welcome back, {st.session_state.username}!")
+        st.success(f"👋 Welcome back, {st.session_state.username}!")
         if st.button("Log Out"):
             st.session_state.logged_in = False
             st.session_state.username = ""
@@ -89,8 +89,8 @@ def main():
                     # Styled HTML heading bar
                     st.markdown('<div class="heading-bar">Login Section</div>', unsafe_allow_html=True)
                     
-                    username = st.text_input("Username")
-                    password = st.text_input("Password", type="password")
+                    username = st.text_input("👤Username")
+                    password = st.text_input("👁️Password", type="password")
 
                     if st.button("Login", use_container_width=True):
                         if verify_user(username, password):
@@ -109,8 +109,8 @@ def main():
                     # Styled HTML heading bar for Sign Up
                     st.markdown('<div class="heading-bar">Create New Account</div>', unsafe_allow_html=True)
                     
-                    new_user = st.text_input("Choose Username")
-                    new_password = st.text_input("Choose Password", type="password")
+                    new_user = st.text_input("👤Choose Username")
+                    new_password = st.text_input("🔒 Choose Password", type="password")
 
                     if st.button("Sign Up", use_container_width=True):
                         if new_user.strip() == "" or new_password.strip() == "":
