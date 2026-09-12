@@ -41,7 +41,7 @@ def fetch_users():
     """Retrieves all users from the database."""
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT name, role FROM users")
+    cursor.execute("SELECT username, password FROM users")
     rows = cursor.fetchall()
     conn.close()
     return rows
