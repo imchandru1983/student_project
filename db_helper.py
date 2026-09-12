@@ -45,3 +45,15 @@ def fetch_users():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+# Change a user's password
+def change_password(username, password):
+    try:
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        c.execute("UPDATE users SET password = ? WHERE username = ?", (password, username))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.IntegrityError:
+        return False

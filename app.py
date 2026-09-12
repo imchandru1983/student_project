@@ -2,7 +2,8 @@ import sqlite3
 import pandas as pd  # Structure data for the grid view
 import streamlit as st
 # Import functions from your separate database file
-from db_helper import init_db, add_user, verify_user, fetch_users
+# TIP: Add your password update function to this import statement if it exists (e.g., update_password)
+from db_helper import init_db, add_user, verify_user, fetch_users, change_password
 
 # Main app
 def main():
@@ -46,7 +47,7 @@ def main():
             st.title(f"👋 Hello, {st.session_state.username}!")
             st.write("Navigate through the app using the menu below:")
             
-            page = st.radio("Go to Page", ["Dashboard", "Profile Settings", "Analytics"])
+            page = st.radio("Go to Page", ["Dashboard", "Change Password", "Analytics"])
             
             st.markdown("---")
             if st.button("Log Out", use_container_width=True):
@@ -56,20 +57,18 @@ def main():
 
         # Main Page Content based on Sidebar Selection
         st.success(f"Welcome back, {st.session_state.username}!")
-        st.header(f"📌 {page} Section")
+        #st.header(f"📌 {page} Section")
         
-        # 👥 DASHBOARD VIEW (NOW MOVED HERE: ONLY SECURED ACCESSIBLE)
+        # 👥 DASHBOARD VIEW 
         if page == "Dashboard":
             st.subheader("👥 Registered Users Directory")
             
             try:
                 raw_users = fetch_users()
                 if raw_users:
-                    # Parse into standard grid view structure
                     df = pd.DataFrame(raw_users, columns=["Username", "Password Hash"])
                     df_display = df[["Username"]]  # Keep hash hidden
                     
-                    # Render the interactive grid
                     st.dataframe(
                         df_display, 
                         use_container_width=True, 
@@ -81,6 +80,41 @@ def main():
             except Exception as e:
                 st.error(f"Error loading dashboard directory: {e}")
                 
+        # ⚙️ PROFILE SETTINGS VIEW (WITH CHANGE PASSWORD SECTION)
+        elif page == "Change Password":
+            st.subheader("⚙️ Change Password")
+            
+            # Using columns to center the profile card layout nicely
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                with st.container(border=True):
+                    st.markdown('<div class="heading-bar">Change Password</div>', unsafe_allow_html=True)
+                    
+                    current_password = st.text_input("🔑 Current Password", type="password")
+                    new_password = st.text_input("🆕 New Password", type="password")
+                    confirm_password = st.text_input("🔁 Confirm New Password", type="password")
+                    
+                    if st.button("Update Password", use_container_width=True):
+                        if current_password.strip() == "" or new_password.strip() == "" or confirm_password.strip() == "":
+                            st.warning("Please fill in all fields.")
+                        elif new_password != confirm_password:
+                            st.error("New passwords do not match!")
+                        elif new_password == current_password:
+                            st.warning("New password cannot be the same as your old password.")
+                        else:
+                            # 1. First verify if the old password is correct
+                            if verify_user(st.session_state.username, current_password):
+                                
+                                # 2. Update the password in SQLite
+                                try:
+                                    change_password(st.session_state.username, new_password)
+                                    st.success("Password updated successfully!")
+                                except Exception as e:
+                                    st.error(f"Database error: {e}")
+                            else:
+                                st.error("Incorrect current password.")
+
+        # 📊 ANALYTICS VIEW
         else:
             st.write(f"This is your personalized {page.lower()} view.")
         
