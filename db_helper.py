@@ -19,7 +19,7 @@ def init_db():
 # Add a new user
 def add_user(username, password):
     try:
-        conn = sqlite3.connect('users.db')
+        conn = sqlite3.connect(DATABASE_NAME)
         c = conn.cursor()
         c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
         conn.commit()
